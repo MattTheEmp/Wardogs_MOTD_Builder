@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wardogs MOTD Builder</title>
+  <meta name="description" content="Build, preview and validate Wardogs server welcome messages (MOTD).">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23E8A33D'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='900' font-size='16' text-anchor='middle' fill='%23151714'%3EWD%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">WD</span>
+      <div>
+        <h1>MOTD Builder</h1>
+        <p>Server welcome messages for Wardogs</p>
+      </div>
+    </div>
+    <div class="stats" id="stats" aria-live="polite">
+      <span class="chip" id="stat-lines">0 / 128 lines</span>
+      <span class="chip chip-error" id="stat-errors">0 errors</span>
+      <span class="chip chip-warning" id="stat-warnings">0 warnings</span>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btn-fix" title="Fix quotes, escapes, tag case, nesting, sizes">Auto-fix</button>
+      <button class="btn" id="btn-share" title="Copy a link that opens this MOTD">Share link</button>
+      <button class="btn" id="btn-download">Download .txt</button>
+      <label class="btn" title="Open a .txt file">Open…<input type="file" id="file-open" accept=".txt,text/plain" hidden></label>
+      <button class="btn btn-primary" id="btn-copy">Copy MOTD</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel editor-panel" aria-label="Editor">
+      <div class="toolbar">
+        <div class="tool-group" aria-label="Basic styles">
+          <button class="tool" data-wrap="Header" title="Big title style"><b>H</b> Header</button>
+          <button class="tool" data-wrap="Bold" title="Bold"><b>B</b></button>
+          <button class="tool" data-wrap="Italic" title="Italic"><i>I</i></button>
+          <button class="tool" id="btn-strip" title="Remove tags from the selection (or current line)">Clear style</button>
+        </div>
+
+        <div class="tool-group text-style" aria-label="Custom text style">
+          <span class="tool-label">&lt;text&gt;</span>
+          <div class="swatches" id="swatches"></div>
+          <label class="color-field" title="Color (#RRGGBB) — leave empty for default">
+            <input type="color" id="style-color-picker" value="#E8A33D">
+            <input type="text" id="style-color" value="#E8A33D" maxlength="7" spellcheck="false" aria-label="Color hex">
+          </label>
+          <label class="field" title="Font size 8–24 — leave empty for default">
+            Size <input type="number" id="style-size" min="8" max="24" placeholder="—">
+          </label>
+          <label class="field">
+            Face
+            <select id="style-face">
+              <option value="">—</option>
+              <option>Bold</option>
+              <option>Italic</option>
+            </select>
+          </label>
+          <button class="tool tool-accent" id="btn-apply-text">Apply</button>
+        </div>
+
+        <div class="tool-group" aria-label="Insert special characters">
+          <span class="tool-label">Insert</span>
+          <button class="tool mono" data-insert="&amp;lt;" title="Shows &lt;">&lt;</button>
+          <button class="tool mono" data-insert="&amp;gt;" title="Shows &gt;">&gt;</button>
+          <button class="tool mono" data-insert="&amp;amp;" title="Shows &amp;">&amp;</button>
+          <button class="tool mono" data-insert="&amp;quot;" title="Shows &quot;">"</button>
+        </div>
+      </div>
+
+      <div class="editor" id="editor">
+        <div class="gutter" id="gutter" aria-hidden="true"></div>
+        <textarea id="input" wrap="off" spellcheck="false" autocomplete="off" autocapitalize="off"
+          aria-label="MOTD source" placeholder="Type your welcome message…  One line here = one line in the popup."></textarea>
+        <div class="counts" id="counts" aria-hidden="true"></div>
+      </div>
+
+      <div class="issues">
+        <h2>Checks <span class="muted" id="issues-summary"></span></h2>
+        <ul id="issues"></ul>
+      </div>
+    </section>
+
+    <section class="panel preview-panel" aria-label="Preview">
+      <div class="preview-head">
+        <h2>In-game preview</h2>
+        <label class="field">Popup width
+          <select id="popup-width">
+            <option value="420">Narrow</option>
+            <option value="560" selected>Normal</option>
+            <option value="720">Wide</option>
+          </select>
+        </label>
+      </div>
+      <div class="popup-stage">
+        <div class="popup" id="popup">
+          <div class="popup-title">Server message</div>
+          <div class="popup-body" id="preview"></div>
+          <div class="popup-foot"><span class="popup-btn">OK</span></div>
+        </div>
+      </div>
+      <p class="hint">Approximate rendering — fonts and exact popup size in game may differ. Click a line to jump to it in the editor.</p>
+
+      <div class="library">
+        <h2>Templates</h2>
+        <div class="row">
+          <select id="template-select" aria-label="Template"></select>
+          <button class="btn" id="btn-template">Load template</button>
+        </div>
+
+        <h2>Saved messages <span class="muted">(this browser)</span></h2>
+        <div class="row">
+          <input type="text" id="save-name" placeholder="Name, e.g. EU KOTH main" maxlength="60">
+          <button class="btn" id="btn-save">Save</button>
+        </div>
+        <ul class="saved" id="saved"></ul>
+      </div>
+
+      <details class="cheatsheet">
+        <summary>Format cheat sheet</summary>
+        <pre>&lt;Header&gt;Welcome to Dogpile&lt;/&gt;     big title
+&lt;Bold&gt;No cheating&lt;/&gt;               bold
+&lt;Italic&gt;Have fun&lt;/&gt;                italic
+&lt;text color="#E8A33D" size="16" fontface="Bold"&gt;EU Hardcore KOTH&lt;/&gt;
+
+• Close every tag with &lt;/&gt;. No tags inside tags.
+• Header takes no color/size — use &lt;text size="20" fontface="Bold" color="…"&gt;.
+• Size 8–24. Color #RRGGBB. fontface Bold or Italic.
+• Show &lt; &gt; &amp; " with &amp;lt; &amp;gt; &amp;amp; &amp;quot;
+• Max 128 lines, 128 visible characters per line (tags don't count).
+• Links and other tags aren't clickable — RCON refuses them.</pre>
+      </details>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/motd.js"></script>
+  <script src="js/templates.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+<text size="22" fontface="Bold" color="#FFD447">WEEKEND EVENT</>
+<text color="#A0A0A0" size="12">Saturday &amp; Sunday — 18:00 CET</>
+
+<Bold>Double XP</> on every match all weekend.
+Top squad on Sunday night wins <text color="#6BE38A" fontface="Bold">VIP for a month</>.
+
+<text color="#7FD6FF">Squad up and bring your friends!</>
