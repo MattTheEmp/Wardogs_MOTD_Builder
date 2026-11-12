@@ -64,6 +64,8 @@ h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: v
 .btn:hover { border-color: #4a5143; background: #282d24; }
 .btn-primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
 .btn-primary:hover { background: #f0b252; border-color: #f0b252; }
+.btn-format { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); color: var(--accent); }
+.btn-format:hover { border-color: var(--accent); }
 .btn:focus-visible, .tool:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 /* ---- Layout ---- */

@@ -385,6 +385,200 @@
       .join('\n');
   }
 
+  // ---------------------------------------------------------------------------
+  // Auto-format: turn pasted plain text (e.g. a Discord rules post) into a
+  // styled MOTD that fits the limits.
+  // ---------------------------------------------------------------------------
+
+  const INVISIBLE = /[​-‍⁠﻿]/g;
+  const BULLET_RE = /^(?:[-*•·–—▪▫►›»✓✔]|\d{1,2}[.)])\s+/;
+
+  function isCapsHeading(s) {
+    const letters = s.match(/\p{L}/gu) || [];
+    return letters.length >= 3 && s === s.toUpperCase() && s !== s.toLowerCase() &&
+      visibleLength(s) <= 60 && s.split(/\s+/).length <= 8 && !BULLET_RE.test(s);
+  }
+
+  function isShortLabel(s) {
+    return visibleLength(s) <= 40 && s.split(/\s+/).length <= 5 && /^\p{Lu}/u.test(s) &&
+      !/[.!?:;,]$/.test(s) && !/:\s/.test(s) && !BULLET_RE.test(s);
+  }
+
+  /** "NO CHEATING & EXPLOITS - This shouldn't…" → ['NO CHEATING & EXPLOITS', "This shouldn't…"] */
+  function splitCapsLead(s) {
+    const m = /^(.{3,60}?)\s+[-–—:]\s+(\S.*)$/.exec(s);
+    return m && isCapsHeading(m[1]) ? [m[1], m[2]] : null;
+  }
+
+  /** "How to Report a Player: While in game…" → ['How to Report a Player', 'While in game…'] */
+  function splitLabel(s) {
+    const m = /^(\p{Lu}[^:.!?]{1,38}):\s+(\S.*)$/u.exec(s);
+    return m && m[1].split(/\s+/).length <= 6 ? [m[1], m[2]] : null;
+  }
+
+  /** Split plain text into pieces of at most `max` visible chars, preferring sentence breaks. */
+  function splitToFit(s, max) {
+    s = s.trim();
+    if (visibleLength(s) <= max) return [s];
+    const sentences = s.match(/[^.!?]+(?:[.!?]+["')\]]*|$)\s*/g) || [s];
+    const out = [];
+    let cur = '';
+    const push = () => { if (cur.trim()) out.push(cur.trim()); cur = ''; };
+    for (let sent of sentences) {
+      if (visibleLength((cur + sent).trim()) <= max) { cur += sent; continue; }
+      push();
+      sent = sent.trim();
+      // A single sentence that is still too long: wrap on words into balanced pieces,
+      // preferring a break after a comma, so no tiny orphan is left on the last line.
+      while (visibleLength(sent) > max) {
+        const chars = Array.from(sent);
+        const target = Math.ceil(chars.length / Math.ceil(chars.length / max));
+        let best = -1;
+        let bestScore = Infinity;
+        for (let k = 1; k <= Math.min(max, chars.length - 1); k++) {
+          if (chars[k] !== ' ') continue;
+          const afterComma = /[,;]/.test(chars[k - 1]);
+          const score = Math.abs(k - target) - (afterComma ? max * 0.15 : 0);
+          if (score < bestScore) { bestScore = score; best = k; }
+        }
+        if (best < 0) best = max;
+        out.push(chars.slice(0, best).join('').trim());
+        sent = chars.slice(best).join('').trim();
+      }
+      cur = sent + ' ';
+    }
+    push();
+    return out;
+  }
+
+  /**
+   * Format pasted plain text into a styled MOTD.
+   * Lines that already contain tags are kept (and auto-fixed).
+   * Options: { title: true, headingColor, headingSize }
+   */
+  function autoFormat(text, options) {
+    const o = Object.assign({ title: true, headingColor: '#E8A33D', headingSize: 18 }, options);
+    const headingTag = buildTextTag({ color: o.headingColor, size: o.headingSize, fontface: 'Bold' });
+    const max = LIMITS.maxChars;
+
+    // 1. Normalise and decode each line into plain text (or keep tagged lines).
+    const src = text.replace(/\r\n?/g, '\n')
+      .replace(/(^|\s)\u2060(?=[a-z0-9][a-z0-9_-]*)/g, '$1#') // Discord #channel mentions paste as U+2060 + name
+      .replace(INVISIBLE, '').replace(/ /g, ' ').replace(/\t/g, '    ');
+    const lines = src.split('\n').map((raw) => {
+      const { tokens } = tokenizeLine(raw.replace(/\s+$/, ''), 0);
+      if (tokens.some((t) => t.t === 'open')) return { tagged: autoFix(raw.trim()) };
+      const plain = tokens.filter((t) => t.t === 'text').map((t) => t.s).join('').replace(/\s+/g, ' ').replace(/\s+([).,!?])/g, '$1').trim();
+      return { plain };
+    });
+
+    const blankAt = (i) => i < 0 || i >= lines.length || (lines[i].plain === '' && !lines[i].tagged);
+
+    // 2. Classify.
+    let seenContent = false;
+    let underSub = false;
+    let prevKind = null;
+    const items = [];
+    lines.forEach((ln, i) => {
+      if (ln.tagged !== undefined) {
+        items.push({ kind: 'tagged', text: ln.tagged });
+        seenContent = true;
+        prevKind = 'tagged';
+        return;
+      }
+      const s = ln.plain;
+      if (s === '') {
+        items.push({ kind: 'blank' });
+        underSub = false;
+        prevKind = 'blank';
+        return;
+      }
+      const prev = blankAt(i - 1) ? null : lines[i - 1].plain;
+      const next = blankAt(i + 1) ? null : lines[i + 1].plain;
+      let item;
+
+      if (!seenContent && o.title && (isCapsHeading(s) || isShortLabel(s))) {
+        item = { kind: 'title', text: s };
+      } else if (isCapsHeading(s)) {
+        item = { kind: 'heading', text: s };
+      } else if (splitCapsLead(s)) {
+        const [h, rest] = splitCapsLead(s);
+        item = { kind: 'heading', text: h, rest };
+      } else if (BULLET_RE.test(s)) {
+        const num = /^\d/.test(s) ? s.match(/^\d{1,2}[.)]/)[0] + ' ' : '• ';
+        item = { kind: 'bullet', prefix: num, text: s.replace(BULLET_RE, '') };
+      } else if (isShortLabel(s)) {
+        const listContext = prevKind === 'item' || (prev !== null && /:$/.test(prev) && next !== null && isShortLabel(next));
+        if (listContext) item = { kind: 'item', text: s };
+        else if (next !== null && !isShortLabel(next)) item = { kind: 'sub', text: s };
+        else item = { kind: 'text', text: s };
+      } else if (splitLabel(s)) {
+        const [label, rest] = splitLabel(s);
+        item = { kind: 'label', label, text: rest };
+      } else if (underSub) {
+        item = { kind: 'bullet', prefix: '• ', text: s };
+      } else {
+        item = { kind: 'text', text: s };
+      }
+
+      if (item.kind === 'heading' || item.kind === 'title') underSub = false;
+      if (item.kind === 'sub') underSub = true;
+      seenContent = true;
+      prevKind = item.kind;
+      items.push(item);
+    });
+
+    // 3. Emit.
+    const out = [];
+    const lastOut = () => out[out.length - 1];
+    const ensureGap = () => { if (out.length && lastOut() !== '') out.push(''); };
+    const emitPlain = (s, prefix) => {
+      const pre = prefix || '';
+      splitToFit(s, max - visibleLength(pre)).forEach((p, k) => out.push((k === 0 ? pre : '') + escapeText(p)));
+    };
+
+    for (const it of items) {
+      switch (it.kind) {
+        case 'blank':
+          if (out.length && lastOut() !== '') out.push('');
+          break;
+        case 'tagged':
+          out.push(it.text);
+          break;
+        case 'title':
+          splitToFit(it.text, max).forEach((p) => out.push(`<Header>${escapeText(p)}</>`));
+          break;
+        case 'heading':
+          ensureGap();
+          splitToFit(it.text, max).forEach((p) => out.push(`${headingTag}${escapeText(p)}</>`));
+          if (it.rest) splitToFit(it.rest, max).forEach((p) => out.push(`<Italic>${escapeText(p)}</>`));
+          break;
+        case 'sub':
+          if (out.length && lastOut() !== '' && !lastOut().startsWith(headingTag)) out.push('');
+          out.push(`<Bold>${escapeText(it.text)}</>`);
+          break;
+        case 'item':
+          emitPlain(it.text, '• ');
+          break;
+        case 'bullet':
+          emitPlain(it.text, it.prefix);
+          break;
+        case 'label': {
+          const labelLen = visibleLength(it.label) + 2;
+          const pieces = splitToFit(it.text, max - labelLen);
+          out.push(`<Bold>${escapeText(it.label)}:</> ${escapeText(pieces[0])}`);
+          if (pieces.length > 1) emitPlain(pieces.slice(1).join(' '));
+          break;
+        }
+        default:
+          emitPlain(it.text);
+      }
+    }
+    while (out.length && out[0] === '') out.shift();
+    while (out.length && lastOut() === '') out.pop();
+    return out.join('\n');
+  }
+
   /** Plain text of a line as shown in game (tags stripped, entities decoded). */
   function plainText(text) {
     return validate(text).lines.map((l) => l.segments.map((s) => s.text).join('')).join('\n');
@@ -394,6 +588,7 @@
     LIMITS,
     validate,
     autoFix,
+    autoFormat,
     plainText,
     escapeText,
     buildTextTag,

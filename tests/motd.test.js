@@ -129,3 +129,40 @@ test('every saved MOTD in motds/ passes validation', () => {
     assert.deepEqual(errs, [], `${f} has errors`);
   }
 });
+
+test('autoFormat turns the plain-text rules post into a valid MOTD', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const plain = fs.readFileSync(path.join(__dirname, 'fixtures', 'rules-plain.txt'), 'utf8');
+  const out = MOTD.autoFormat(plain);
+  const r = MOTD.validate(out);
+  assert.equal(r.errorCount, 0, JSON.stringify(r.issues));
+  assert.ok(r.lineCount <= MOTD.LIMITS.maxLines);
+  const lines = out.split('\n');
+  assert.equal(lines[0], '<Header>IN-GAME SERVER RULES</>');
+  assert.ok(lines.includes('<text color="#E8A33D" size="18" fontface="Bold">NO GRIEFING</>'));
+  assert.ok(lines.includes('<Bold>Ramming Vehicles</>'));
+  assert.ok(lines.includes('• Warnings'));
+  assert.ok(out.includes('#support-or-report'));
+  assert.ok(!/⁠/.test(out));
+  // running it again changes nothing
+  assert.equal(MOTD.autoFormat(out), out);
+});
+
+test('autoFormat details', () => {
+  // caps heading with a tagline
+  assert.equal(
+    MOTD.autoFormat('Intro\n\nNO CHEATING - Seriously.', { title: false }).split('\n').slice(2).join('\n'),
+    '<text color="#E8A33D" size="18" fontface="Bold">NO CHEATING</>\n<Italic>Seriously.</>');
+  // label lines, bullets, escaping
+  assert.equal(MOTD.autoFormat('How to report: press Tab', { title: false }), '<Bold>How to report:</> press Tab');
+  assert.equal(MOTD.autoFormat('- Tom & Jerry <3', { title: false }), '• Tom &amp; Jerry &lt;3');
+  // long lines split under the limit without orphans
+  const long = 'word '.repeat(60).trim() + '.';
+  const parts = MOTD.autoFormat(long, { title: false }).split('\n');
+  assert.equal(parts.length, 3);
+  for (const p of parts) assert.ok(p.length <= 128 && p.length > 60, p);
+  // tagged lines are left alone
+  const tagged = 'Keep chat in <text color="#7FD6FF">English</>';
+  assert.equal(MOTD.autoFormat(tagged, { title: false }), tagged);
+});

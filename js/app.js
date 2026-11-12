@@ -497,6 +497,25 @@
     });
     faceSelect.addEventListener('change', saveStyle);
 
+    $('btn-format').addEventListener('click', () => {
+      // Format the selected lines, or the whole message if nothing is selected.
+      let s = 0;
+      let e = input.value.length;
+      const hasSel = input.selectionStart !== input.selectionEnd;
+      if (hasSel) {
+        s = lineBounds(input.selectionStart).start;
+        e = lineBounds(Math.max(input.selectionStart, input.selectionEnd - 1)).end;
+      }
+      const before = input.value.slice(s, e);
+      if (!before.trim()) return toast('Paste your text first, then Auto-format.', true);
+      const formatted = MOTD.autoFormat(before, { title: !hasSel || s === 0 });
+      if (formatted === normalizeNewlines(before)) return toast('Already formatted — nothing to change.');
+      replaceRange(s, e, formatted, hasSel ? 'select' : undefined);
+      const r = lastResult;
+      const tail = r.errorCount ? ` ${r.errorCount} issue${r.errorCount === 1 ? '' : 's'} left — see Checks.` : '';
+      toast(`Formatted — ${r.lineCount} / ${LIMITS.maxLines} lines. Ctrl+Z to undo.${tail}`, r.errorCount > 0);
+    });
+
     $('btn-fix').addEventListener('click', () => {
       const before = normalizeNewlines(input.value);
       const fixed = MOTD.autoFix(input.value);

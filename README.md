@@ -14,6 +14,10 @@ Type on the left, see the popup on the right, and get told exactly which line RC
   unclosed tags, nested tags, `</Bold>`-style closers, Header with color/size, unknown tags and links,
   bad colors, sizes outside 8–24, bad `fontface`, smart quotes pasted from Discord, unescaped `< > &`,
   and the 128-line and 128-character limits.
+- **Auto-format**: paste plain text (a Discord rules post, a doc) and it becomes a styled MOTD: the first line becomes the
+  Header, ALL-CAPS lines become amber section headings, short title lines become bold sub-headings, lists get bullets,
+  `Label: text` gets a bold label, long lines are split at sentence breaks to stay under 128 characters, and
+  special characters are escaped. Works on the selected lines or the whole message, and `Ctrl+Z` undoes it.
 - **Auto-fix**: straightens quotes, escapes special characters, fixes tag case, closes and un-nests tags,
   clamps sizes, and turns `<Header color=…>` into the equivalent `<text>` title. It won't shorten a line that's over the limit; you decide what to cut.
 - **Toolbar**: wrap selected text in Header / Bold / Italic, apply a `<text>` style (color swatches, size, face),
