@@ -1,5 +1,7 @@
 # Wardogs MOTD Builder
 
+[![Wardogs MOTD Builder — build your server message](assets/banner.jpg)](https://matttheemp.github.io/Wardogs_MOTD_Builder/)
+
 A browser tool for writing **Wardogs server welcome messages** (the MOTD popup players see on join).
 Type on the left, see the popup on the right, and get told exactly which line RCON will refuse, and why, before you paste it in.
 
@@ -45,6 +47,7 @@ Keep chat in <text color="#7FD6FF">English</> and be respectful
 | `index.html`, `css/`, `js/app.js` | The builder UI (static, no build step) |
 | `js/motd.js` | Parser, validator and auto-fixer. Works in the browser and in Node |
 | `js/templates.js` | Starter templates |
+| `assets/` | Banner image (README + link previews) |
 | `motds/` | Saved server messages as `.txt`. CI validates each one |
 | `tests/` | `node --test` suite for the spec rules |
 | `.github/workflows/deploy.yml` | Runs tests, then publishes to GitHub Pages |
