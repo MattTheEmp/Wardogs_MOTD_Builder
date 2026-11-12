@@ -35,9 +35,15 @@
       <button class="btn btn-format" id="btn-format" title="Turn pasted plain text into a styled MOTD that fits the limits (works on the selection, or everything)">✦ Auto-format</button>
       <button class="btn" id="btn-fix" title="Fix quotes, escapes, tag case, nesting, sizes">Auto-fix</button>
       <button class="btn" id="btn-share" title="Copy a link that opens this MOTD">Share link</button>
-      <button class="btn" id="btn-download">Download .txt</button>
-      <label class="btn" title="Open a .txt file">Open…<input type="file" id="file-open" accept=".txt,text/plain" hidden></label>
-      <button class="btn btn-primary" id="btn-copy">Copy MOTD</button>
+      <label class="btn" title="Open a .txt message or a config.ini">Open…<input type="file" id="file-open" accept=".txt,.ini,text/plain" hidden></label>
+      <div class="export">
+        <select id="export-format" aria-label="Export format" title="Format used by Copy and Download">
+          <option value="ini">config.ini</option>
+          <option value="txt">Plain text</option>
+        </select>
+        <button class="btn" id="btn-download">Download</button>
+        <button class="btn btn-primary" id="btn-copy">Copy</button>
+      </div>
     </div>
   </header>
 
@@ -141,7 +147,14 @@
 • Size 8–24. Color #RRGGBB. fontface Bold or Italic.
 • Show &lt; &gt; &amp; " with &amp;lt; &amp;gt; &amp;amp; &amp;quot;
 • Max 128 lines, 128 visible characters per line (tags don't count).
-• Links and other tags aren't clickable — RCON refuses them.</pre>
+• Links and other tags aren't clickable — RCON refuses them.
+
+config.ini: the RCON box escapes tags, so put formatted messages in
+the server's config.ini — one entry per line, blank lines included:
+.ServerWelcomeMessageLines=&lt;Header&gt;Welcome&lt;/&gt;
+.ServerWelcomeMessageLines=
+.ServerWelcomeMessageLines=&lt;Bold&gt;No cheating&lt;/&gt;
+Copy/Download with "config.ini" selected does this for you.</pre>
       </details>
     </section>
   </main>

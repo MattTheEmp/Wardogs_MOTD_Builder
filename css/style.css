@@ -66,6 +66,10 @@ h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: v
 .btn-primary:hover { background: #f0b252; border-color: #f0b252; }
 .btn-format { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); color: var(--accent); }
 .btn-format:hover { border-color: var(--accent); }
+.export { display: inline-flex; gap: 6px; align-items: center; }
+.export select {
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; cursor: pointer;
+}
 .btn:focus-visible, .tool:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 /* ---- Layout ---- */

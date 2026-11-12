@@ -6,6 +6,7 @@
   const STORAGE_DRAFT = 'wardogs-motd:draft';
   const STORAGE_LIBRARY = 'wardogs-motd:library';
   const STORAGE_STYLE = 'wardogs-motd:style';
+  const STORAGE_EXPORT = 'wardogs-motd:export';
   const SWATCHES = ['#FF4D4D', '#E8A33D', '#FFD447', '#6BE38A', '#7FD6FF', '#4D8BFF', '#B48CFF', '#FFFFFF', '#A0A0A0'];
 
   const $ = (id) => document.getElementById(id);
@@ -236,7 +237,7 @@
     issuesEl.textContent = '';
     if (!result.issues.length) {
       const li = el('li', 'all-good');
-      li.append(el('span', 'sev', '✓'), el('span', '', 'Looks good — ready to paste into RCON.'));
+      li.append(el('span', 'sev', '✓'), el('span', '', 'Looks good — ready to export.'));
       issuesEl.appendChild(li);
       $('issues-summary').textContent = '';
       return;
@@ -530,22 +531,36 @@
         (left ? ` — ${left} left to fix by hand.` : '.'), left > 0);
     });
 
+    const exportSelect = $('export-format');
+    exportSelect.value = store.get(STORAGE_EXPORT, 'ini');
+    exportSelect.addEventListener('change', () => store.set(STORAGE_EXPORT, exportSelect.value));
+    const asIni = () => exportSelect.value === 'ini';
+    const exportText = () => {
+      const msg = normalizeNewlines(input.value);
+      return asIni() ? MOTD.toConfigLines(msg) : msg;
+    };
+
     $('btn-copy').addEventListener('click', async () => {
-      const ok = await copyText(normalizeNewlines(input.value));
+      const ok = await copyText(exportText());
       if (!ok) return toast('Copy failed — select the text and copy manually.', true);
+      const where = asIni()
+        ? `Copied ${lastResult.lineCount} config.ini lines — paste them into the server's config.ini.`
+        : 'Copied the plain message.';
       if (lastResult.errorCount) {
-        toast(`Copied — but there ${lastResult.errorCount === 1 ? 'is 1 error' : `are ${lastResult.errorCount} errors`}. RCON will refuse to Apply until fixed.`, true);
+        toast(`${where} Note: ${lastResult.errorCount === 1 ? '1 error' : `${lastResult.errorCount} errors`} still listed in Checks.`, true);
       } else {
-        toast('Copied to clipboard — paste it into the RCON editor.');
+        toast(where);
       }
     });
 
     $('btn-download').addEventListener('click', () => {
-      const blob = new Blob([normalizeNewlines(input.value) + '\n'], { type: 'text/plain;charset=utf-8' });
+      const ini = asIni();
+      const body = exportText().replace(/\n/g, ini ? '\r\n' : '\n') + (ini ? '\r\n' : '\n');
+      const blob = new Blob([body], { type: 'text/plain;charset=utf-8' });
       const a = el('a');
       const name = ($('save-name').value.trim() || 'wardogs-motd').replace(/[^\w.-]+/g, '-');
       a.href = URL.createObjectURL(blob);
-      a.download = name + '.txt';
+      a.download = name + (ini ? '.ini' : '.txt');
       document.body.appendChild(a);
       a.click();
       setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
@@ -555,10 +570,23 @@
       const file = e.target.files[0];
       if (!file) return;
       file.text().then((t) => {
-        setText(normalizeNewlines(t), `Opened ${file.name}`);
-        $('save-name').value = file.name.replace(/\.txt$/i, '');
+        if (MOTD.isConfigText(t)) {
+          setText(MOTD.fromConfigLines(t), `Opened ${file.name} — read the ServerWelcomeMessageLines entries.`);
+        } else {
+          setText(normalizeNewlines(t), `Opened ${file.name}`);
+        }
+        $('save-name').value = file.name.replace(/\.(txt|ini)$/i, '');
       });
       e.target.value = '';
+    });
+
+    // Pasting config.ini lines strips the ".ServerWelcomeMessageLines=" prefixes.
+    input.addEventListener('paste', (e) => {
+      const t = e.clipboardData && e.clipboardData.getData('text/plain');
+      if (!t || !MOTD.isConfigText(t)) return;
+      e.preventDefault();
+      replaceRange(input.selectionStart, input.selectionEnd, MOTD.fromConfigLines(t));
+      toast('Pasted config.ini lines — prefixes removed for editing. Copy adds them back.');
     });
 
     $('btn-share').addEventListener('click', async () => {

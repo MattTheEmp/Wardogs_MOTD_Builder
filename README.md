@@ -24,7 +24,11 @@ Type on the left, see the popup on the right, and get told exactly which line RC
   clear styling, insert `&lt; &gt; &amp; &quot;`. `Ctrl+B` and `Ctrl+I` work too.
 - **Per-line character counter** (tags don't count, and each `&lt;` counts as 1).
 - **Templates**, **saved messages** (stored in your browser), **share links** that carry the whole MOTD in the URL,
-  open/download `.txt`, and one-click **Copy MOTD**.
+  open/download, and one-click **Copy**.
+- **config.ini export** (default): the RCON text box escapes tags, so formatted messages go in the server's
+  `config.ini`. With **config.ini** selected, Copy and Download put `.ServerWelcomeMessageLines=` in front of every line,
+  blank spacer lines included. Pasting or opening a config.ini strips the prefixes back off for editing.
+  Switch to **Plain text** for the bare message.
 
 ## Message format (quick reference)
 
@@ -43,6 +47,19 @@ Keep chat in <text color="#7FD6FF">English</> and be respectful
 - Links and any other tag are **not** clickable. They show as typed and RCON refuses the line.
 - Show `< > & "` with `&lt; &gt; &amp; &quot;`.
 - Limits: 128 lines, 128 visible characters per line, font size 8–24. Anything over is cut in game and RCON refuses to Apply.
+
+## Putting it on the server
+
+The RCON welcome-message box escapes `<` and `>`, so tags show up as typed. For formatting, edit `config.ini` instead:
+
+```ini
+.ServerWelcomeMessageLines=<Header>Welcome to Dogpile</>
+.ServerWelcomeMessageLines=
+.ServerWelcomeMessageLines=<Bold>No cheating</>
+```
+
+One entry per popup line, in order. The `.` prefix keeps duplicate entries such as blank lines. Replace any existing
+`ServerWelcomeMessageLines` entries, then restart the server (or reload the config).
 
 ## Repo layout
 

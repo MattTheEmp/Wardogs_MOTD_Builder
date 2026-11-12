@@ -166,3 +166,29 @@ test('autoFormat details', () => {
   const tagged = 'Keep chat in <text color="#7FD6FF">English</>';
   assert.equal(MOTD.autoFormat(tagged, { title: false }), tagged);
 });
+
+test('config.ini export adds .ServerWelcomeMessageLines= to every line, blanks included', () => {
+  const msg = '<Header>Welcome</>\n\nKeep chat in <text color="#7FD6FF">English</>';
+  assert.equal(MOTD.toConfigLines(msg),
+    '.ServerWelcomeMessageLines=<Header>Welcome</>\n' +
+    '.ServerWelcomeMessageLines=\n' +
+    '.ServerWelcomeMessageLines=Keep chat in <text color="#7FD6FF">English</>');
+  assert.equal(MOTD.toConfigLines(msg + '\n').split('\n').length, 3); // trailing newline adds nothing
+});
+
+test('config.ini import round-trips and ignores other keys', () => {
+  const msg = '<Header>Welcome</>\n\n<Bold>No cheating</> &amp; have fun';
+  assert.equal(MOTD.fromConfigLines(MOTD.toConfigLines(msg)), msg);
+  const ini = [
+    '[/Script/Wardogs.ServerSettings]',
+    'ServerName=Dogpile',
+    '!ServerWelcomeMessageLines=ClearArray',
+    '+ServerWelcomeMessageLines="Quoted line"',
+    '.ServerWelcomeMessageLines=',
+    '-ServerWelcomeMessageLines=Removed',
+    '.ServerWelcomeMessageLines=<Italic>Last</>',
+  ].join('\r\n');
+  assert.ok(MOTD.isConfigText(ini));
+  assert.ok(!MOTD.isConfigText('just a message'));
+  assert.equal(MOTD.fromConfigLines(ini), 'Quoted line\n\n<Italic>Last</>');
+});

@@ -579,6 +579,42 @@
     return out.join('\n');
   }
 
+  // ---------------------------------------------------------------------------
+  // config.ini export / import.
+  // The RCON text box escapes tags, so formatted messages go straight into the
+  // server's config.ini as one ".ServerWelcomeMessageLines=" entry per line.
+  // The "." prefix adds an entry even if it duplicates another (needed for blank lines).
+  // ---------------------------------------------------------------------------
+
+  const CONFIG_KEY = 'ServerWelcomeMessageLines';
+  const CONFIG_LINE_RE = new RegExp('^\\s*([.+\\-!]?)' + CONFIG_KEY + '\\s*=(.*)$');
+
+  /** Message → config.ini lines, one ".ServerWelcomeMessageLines=" per line (blank lines included). */
+  function toConfigLines(text) {
+    return splitLines(text.replace(/\r\n?/g, '\n')).map((l) => '.' + CONFIG_KEY + '=' + l).join('\n');
+  }
+
+  /** True if the text contains ServerWelcomeMessageLines entries. */
+  function isConfigText(text) {
+    return text.replace(/\r\n?/g, '\n').split('\n').some((l) => CONFIG_LINE_RE.test(l));
+  }
+
+  /**
+   * config.ini text → message. Keeps only the ServerWelcomeMessageLines entries (in order),
+   * skips removals (-) and ClearArray (!), and unwraps values the ini writer put in quotes.
+   */
+  function fromConfigLines(text) {
+    const out = [];
+    for (const line of text.replace(/\r\n?/g, '\n').split('\n')) {
+      const m = CONFIG_LINE_RE.exec(line);
+      if (!m || m[1] === '-' || m[1] === '!') continue;
+      let v = m[2].replace(/\s+$/, '');
+      if (v.length >= 2 && v[0] === '"' && v[v.length - 1] === '"') v = v.slice(1, -1);
+      out.push(v);
+    }
+    return out.join('\n');
+  }
+
   /** Plain text of a line as shown in game (tags stripped, entities decoded). */
   function plainText(text) {
     return validate(text).lines.map((l) => l.segments.map((s) => s.text).join('')).join('\n');
@@ -589,6 +625,10 @@
     validate,
     autoFix,
     autoFormat,
+    toConfigLines,
+    fromConfigLines,
+    isConfigText,
+    CONFIG_KEY,
     plainText,
     escapeText,
     buildTextTag,
