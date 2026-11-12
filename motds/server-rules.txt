@@ -1,0 +1,77 @@
+<Header>IN-GAME SERVER RULES</>
+<text color="#FF4D4D" fontface="Bold">Breaking these rules may result in a Kick or Permanent Ban.</>
+We want this server to be competitive, chaotic, and fun without becoming miserable for everyone involved.
+Use common sense, respect the community, and don't be a shit-head.
+
+<text size="18" fontface="Bold" color="#E8A33D">NO CHEATING &amp; EXPLOITS</>
+<Italic>This shouldn't even have to be stated.</>
+• No cheating, hacking, or exploiting bugs/glitches to gain an unfair advantage.
+• Do not intentionally abuse any known exploits.
+• Do not joke about cheating or exploiting. We take these reports seriously and will kick or ban when necessary.
+• Bulkhead is actively working to identify and remove cheaters. Help them by reporting suspicious players in game.
+<text color="#7FD6FF" fontface="Bold">How to report a player:</> Tab → Scoreboard → Right Click Player → Report
+Bulkhead handles investigations and enforcement regarding cheating.
+Server admins reserve the right to remove or ban players we reasonably believe are cheating or exploiting.
+This protects the integrity of the server and keeps accusations or exploit abuse from putting the server at risk.
+
+<text size="18" fontface="Bold" color="#E8A33D">NO GRIEFING</>
+Do not intentionally do things designed solely to stop other players from playing the game. This includes:
+
+<Bold>Ramming Vehicles</>
+• Do not intentionally ram helicopters or vehicles inside your own HQ.
+• Do not intentionally cause friendly vehicles to crash, explode, or otherwise become unusable.
+• Do not fly/drive vehicles from HQ with the sole intent of ramming enemy vehicles to destroy them.
+
+<Bold>Destroying Friendly Crates</>
+• Do not destroy player-placed crates by the vendor.
+• We understand players may have different opinions about this. It does not give you permission to destroy them.
+
+<Bold>HQ Camping</>
+• Do not camp outside the enemy faction HQ with vehicles in a way that prevents players from leaving their base.
+• Do not set up anti-air FOBs right outside an enemy HQ to repeatedly kill players as they leave.
+• Anti-Air and fighting in No Man's Land is fine, but keep a reasonable distance from the enemy HQ.
+Give players ample opportunity to leave their base and reach the Combat Zone.
+We all love a good heli dogfight and hunting artillery.
+Chasing someone all the way back to their HQ and then sitting outside waiting for them to leave is not that.
+
+<Bold>Repeated Team Killing</>
+• Repeated or intentional team killing will not be tolerated.
+• Accidental team kills happen. If you accidentally TK someone, own it and move on.
+
+<Bold>Kill Farming</>
+• Do not intentionally revive an enemy player solely to kill them again repeatedly.
+<Italic>Exhibit A: Revive → Kill → Revive → Kill</>
+
+<text size="18" fontface="Bold" color="#E8A33D">RESPECTFUL CHAT &amp; VOIP</>
+Friendly banter and competition between teammates &amp; factions is fine.
+Being an asshole for the sake of being an asshole is not.
+• Rage baiting and excessive harassment is not welcome.
+• Do not intentionally dogpile, bully, or repeatedly target another player through chat or VOIP.
+• Do not harass players because of their skill level or playstyle.
+• <text color="#FF4D4D" fontface="Bold">Absolutely no racism, slurs, hate speech, or discrimination of any kind.</>
+These rules apply to All Chat, Team Chat, and VOIP.
+If someone is being inappropriate, don't turn it into a public argument.
+Report them in <text color="#7FD6FF">#support-or-report</> on Discord and let the admins handle it.
+If no admin is online, please provide screenshots, clips, or other evidence whenever possible.
+
+<text size="18" fontface="Bold" color="#E8A33D">NO STREAM SNIPING</>
+<text size="18" fontface="Bold" color="#E8A33D">NO ADMIN IMPERSONATING</>
+
+<text size="18" fontface="Bold" color="#E8A33D">ADMIN ACTIONS</>
+Admins may issue: <Bold>Warnings</> • <Bold>Kicks</> • <Bold>Temporary bans</> • <Bold>Permanent bans</>
+A kick is a warning, not an invitation to immediately rejoin and continue the behavior. Take the hint.
+<text color="#FF4D4D" fontface="Bold">Rejoining and continuing to cause problems will result in a permanent ban.</>
+Admins reserve the right to act on anything that breaks the spirit of these rules, even if it isn't explicitly listed.
+
+<text size="18" fontface="Bold" color="#E8A33D">REPORTING PLAYERS</>
+If you believe someone is breaking the rules, please use <text color="#7FD6FF">#support-or-report</> on Discord.
+When possible, include: player name, what happened, screenshots, video clips, and any other relevant info.
+There is typically an admin available while the server is active, and we review reports as quickly as possible.
+Please do not start witch hunts, publicly accuse players, or try to enforce the rules yourself. Let the admins handle it.
+
+<text size="18" fontface="Bold" color="#6BE38A">HAVE FUN!</>
+At the end of the day, we're all here to play WARDOGS, shoot at each other, blow things up, and have a good time.
+Our community is growing, and we'd love for you to continue being a part of it.
+<Bold>Play hard. Talk your shit. Have fun. Just don't ruin the game for everyone else.</>
+
+<text size="20" fontface="Bold" color="#E8A33D">Welcome to the server.</>
