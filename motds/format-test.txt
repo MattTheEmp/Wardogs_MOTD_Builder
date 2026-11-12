@@ -1,0 +1,77 @@
+<Header>Header tag: &lt;Header&gt;</>
+Plain text line, no tags (default size and color)
+
+<text size="16" fontface="Bold" color="#E8A33D">— BASIC TAGS —</>
+<Bold>Bold tag: &lt;Bold&gt;</>
+<Italic>Italic tag: &lt;Italic&gt;</>
+<text fontface="Bold">text tag with fontface=&quot;Bold&quot;</>
+<text fontface="Italic">text tag with fontface=&quot;Italic&quot;</>
+<text size="20" fontface="Bold">text size 20 Bold (compare to the Header at the top)</>
+
+<text size="16" fontface="Bold" color="#E8A33D">— FONT SIZES 8–24 —</>
+<text size="8">Size 8 (minimum)</>
+<text size="9">Size 9</>
+<text size="10">Size 10</>
+<text size="11">Size 11</>
+<text size="12">Size 12</>
+<text size="13">Size 13</>
+<text size="14">Size 14</>
+<text size="15">Size 15</>
+<text size="16">Size 16</>
+<text size="17">Size 17</>
+<text size="18">Size 18</>
+<text size="19">Size 19</>
+<text size="20">Size 20</>
+<text size="21">Size 21</>
+<text size="22">Size 22</>
+<text size="23">Size 23</>
+<text size="24">Size 24 (maximum)</>
+
+<text size="16" fontface="Bold" color="#E8A33D">— SIZE + FONTFACE —</>
+<text size="10" fontface="Bold">Size 10 Bold</> · <text size="10" fontface="Italic">Size 10 Italic</>
+<text size="14" fontface="Bold">Size 14 Bold</> · <text size="14" fontface="Italic">Size 14 Italic</>
+<text size="18" fontface="Bold">Size 18 Bold</> · <text size="18" fontface="Italic">Size 18 Italic</>
+<text size="24" fontface="Bold">Size 24 Bold</> · <text size="24" fontface="Italic">Size 24 Italic</>
+
+<text size="16" fontface="Bold" color="#E8A33D">— COLORS —</>
+<text color="#FF4D4D">Red #FF4D4D</>
+<text color="#FF8C42">Orange #FF8C42</>
+<text color="#E8A33D">Amber #E8A33D</>
+<text color="#FFD447">Yellow #FFD447</>
+<text color="#6BE38A">Green #6BE38A</>
+<text color="#2ECC71">Emerald #2ECC71</>
+<text color="#7FD6FF">Light blue #7FD6FF</>
+<text color="#4D8BFF">Blue #4D8BFF</>
+<text color="#B48CFF">Purple #B48CFF</>
+<text color="#FF6FB5">Pink #FF6FB5</>
+<text color="#FFFFFF">White #FFFFFF</>
+<text color="#A0A0A0">Gray #A0A0A0</>
+<text color="#5A5A5A">Dark gray #5A5A5A</>
+
+<text size="16" fontface="Bold" color="#E8A33D">— COLOR + SIZE + FONTFACE —</>
+<text color="#FF4D4D" size="20" fontface="Bold">Red, size 20, Bold</>
+<text color="#7FD6FF" size="16" fontface="Italic">Light blue, size 16, Italic</>
+<text color="#6BE38A" size="12" fontface="Bold">Green, size 12, Bold</>
+<text color="#FFD447" size="8" fontface="Italic">Yellow, size 8, Italic</>
+
+<text size="16" fontface="Bold" color="#E8A33D">— MIXED ON ONE LINE —</>
+Plain, <Bold>Bold</>, <Italic>Italic</>, <text color="#FF4D4D">red</>, <text size="20">size 20</>, back to plain
+<text color="#6BE38A">Green</> <text color="#FFD447">Yellow</> <text color="#FF4D4D">Red</> <text color="#7FD6FF">Blue</> — four colors, one line
+
+<text size="16" fontface="Bold" color="#E8A33D">— SPECIAL CHARACTERS —</>
+Escapes: &lt; less than, &gt; greater than, &amp; ampersand, &quot; quote
+Fake tag shown as text: &lt;Bold&gt;not bold&lt;/&gt;
+Unicode: → arrow • bullet ✓ check é ñ ü accents
+Emoji (may not render in game font): 🙂 🔥 🎯
+
+<text size="16" fontface="Bold" color="#E8A33D">— SPACING —</>
+The next line is an empty spacer line:
+
+The line above was an empty spacer line.
+
+<text size="16" fontface="Bold" color="#E8A33D">— LENGTH —</>
+This line is exactly 128 visible characters long, the per-line maximum. It should wrap in the popup: xxxxxxxxxxxxxxxxxxxxxxxxxxx
+<Bold>Tags do not count:</> this line has 128 visible characters even though the raw text is longer: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+
+<text size="16" fontface="Bold" color="#E8A33D">— END —</>
+<text color="#A0A0A0" size="12">Last line: line 77 of 77 (limit 128). If you can read this, scrolling works.</>
